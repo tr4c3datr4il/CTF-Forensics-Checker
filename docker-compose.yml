@@ -1,4 +1,5 @@
 services:
+  # Change this to your desired name
   forensics_challenge:
     build: .
     ports:

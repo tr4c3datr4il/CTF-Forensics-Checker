@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 
 from flag import FLAG
+from pow_module import SOLVER_URL, get_challenge, verify_challenge
 import time
 import sys
+import os
 
 
 GREEN = '\033[92m'
@@ -45,10 +47,11 @@ ANSWERS = [
     "",
     "",
     "",
+    "",
     ""
 ]
 
-assert len(QUESTIONS) == len(ANSWERS), "Questions and Answers length mismatch!"
+assert len(QUESTIONS) == len(ANSWERS), f"Questions and Answers length mismatch! {len(QUESTIONS)} != {len(ANSWERS)}"
 
 QnA = dict(zip(QUESTIONS, ANSWERS))
 
@@ -82,8 +85,38 @@ def getInputnValidate():
 def getFlag():
     print(f"{GREEN}Congrats! Here is your flag: {FLAG}{NORM}")
     sys.exit(0)
+
+def powCheck(difficulty):
+    if difficulty == 0:
+        print("== proof-of-work: disabled ==")
+        sys.stdout.flush()
+        return 
     
+    challenge = get_challenge(difficulty)
+    
+    banner = f"""== proof-of-work: enabled ==
+please solve a pow first
+You can run the solver with:
+    python3 <(curl -sSL {SOLVER_URL}) solve {challenge}
+===================
+
+Solution? """
+    
+    print(banner, end="")
+    sys.stdout.flush()
+    
+    solution = input().strip()
+    if verify_challenge(challenge, solution):
+        print("Correct")
+        sys.stdout.flush()
+        os.system('clear')
+        return
+    else:
+        print("Proof-of-work fail")
+        sys.exit(1)
+
 if __name__=="__main__":
+    powCheck(int(sys.argv[1]))
     print(BANNER)
     if getInputnValidate():
         getFlag()
