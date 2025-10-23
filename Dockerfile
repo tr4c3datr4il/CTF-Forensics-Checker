@@ -6,14 +6,19 @@ ENV TERM=xterm
 # Setup the challenge
 RUN apt-get update
 RUN apt-get install -y socat
+RUN python3 -m pip install ecdsa gmpy2
 
 RUN mkdir chall
 COPY src/* /chall
 WORKDIR /chall
 
-RUN python3 -m pip install ecdsa gmpy2
 RUN chmod +x server.py
 RUN chmod +x flag.py
 
-CMD ["socat", "-d", "tcp-listen:1259,reuseaddr,fork", "exec:'./server.py 12590',stderr"]
+RUN echo '#!/bin/bash' > /chall/wrapper.sh && \
+    echo 'export CLIENT_IP="$SOCAT_PEERADDR"' >> /chall/wrapper.sh && \
+    echo './server.py "$@"' >> /chall/wrapper.sh && \
+    chmod +x /chall/wrapper.sh
+
+CMD ["socat", "-d", "tcp-listen:1259,reuseaddr,fork", "exec:'/chall/wrapper.sh 0',stderr"]
 EXPOSE 1259
