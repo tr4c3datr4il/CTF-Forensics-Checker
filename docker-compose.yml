@@ -6,4 +6,3 @@ services:
       - "1259:1259"
     volumes:
       - "./logs:/chall/logs"
-    

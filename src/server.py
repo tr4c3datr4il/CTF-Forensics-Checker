@@ -71,7 +71,7 @@ def validate_answer():
                 time.sleep(time_out)
             
             try:
-                user_input = input("==> ")
+                user_input = input("==> ").strip()
             except (EOFError, KeyboardInterrupt):
                 log_event("Client disconnected during input")
                 sys.exit(0)
